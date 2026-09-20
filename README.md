@@ -1,402 +1,120 @@
-# E-Commerce Customer & Product Analytics
+# E-Commerce Analytics: Sales, Customers, Retention, and Operations
 
-## Project Overview
+An end-to-end analytics project using the Brazilian Olist e-commerce dataset. The project combines a normalized MySQL model, reproducible Python analysis, and Power BI reporting across sales, customer value, retention, products, geography, and operations.
 
-This project analyzes Brazilian e-commerce transaction data to understand customer purchasing behavior, customer retention, product performance, geographic performance, and revenue trends.
+## Business Problem
 
-The project uses **SQL** for data analysis and aggregation, **Python** for exploratory analysis, **RFM methodology** for customer segmentation, and **Power BI** for interactive business intelligence reporting.
+The analysis answers a progression of business questions: how much the business sells, who buys, who returns, which customers and products are valuable, where demand is concentrated, and where operations need attention.
 
-The final solution transforms raw e-commerce data into actionable insights related to customer retention, high-value customer segments, product category performance, geographic revenue contribution, and sales trends.
+## Project Phases
 
----
+### Phase 1: Sales and Executive Analytics
 
-## Business Objectives
+Revenue, orders, customers, AOV, state performance, category performance, and monthly trends.
 
-The analysis aims to answer the following business questions:
+### Phase 2: Customer and RFM Analytics
 
-- How is the business performing in terms of revenue and orders?
-- What percentage of customers make repeat purchases?
-- Which customers are high-value or at risk?
-- Which product categories generate the highest revenue?
-- Which categories contribute the most to overall revenue?
-- How does revenue and order performance change over time?
-- Which geographic markets contribute the most revenue?
-- What actions can improve customer retention and business growth?
+Customer value, repeat purchase behavior, churn risk, and the retained segmentation:
 
----
+- High Value Active
+- High Value At Risk
+- Recent Low Value
+- At Risk
+- Regular Customers
 
-## Tools & Technologies
+### Phase 3: Product Analytics
 
-- **SQL / MySQL** — Data querying, joins, aggregation, RFM analysis
-- **Python / Jupyter Notebook** — Data exploration and validation
-- **Power BI** — Dashboard development and visualization
-- **DAX** — KPI and measure development
-- **Power Query** — Data preparation
-- **RFM Analysis** — Customer segmentation
+Category revenue, order volume, average price, catalog size, and revenue concentration.
 
----
+### Phase 4: Time-Series Analytics
 
-## Dataset
+Monthly revenue, orders, AOV, peak periods, annual performance, and growth.
 
-The project uses the **Brazilian E-Commerce Public Dataset by Olist**.
+### Phase 5: Observed Customer Lifetime Value
 
-The analysis primarily uses data related to:
+Observed CLV is historical customer revenue, not a prediction of future value. The analysis includes customer lifetime revenue, average customer value, top customers, Pareto concentration, CLV by state, and CLV by category.
 
-- Customers
-- Orders
-- Order Items
-- Order Payments
-- Products
-- Geographic information
+### Phase 6: Cohort and Retention Analytics
 
-### Revenue Definition
+Monthly cohorts, cohort size, month 1/3/6 retention, retention heatmaps, and cohort revenue.
 
-Revenue in this project is calculated as the **sum of product item prices** from order items and excludes freight charges.
+### Phase 7: Geographic Intelligence
 
-### Key Data Relationships
+State and city revenue, AOV, order volume, customer concentration, and optional geolocation enrichment.
 
-The primary identifiers used to connect the datasets include:
+### Phase 8: Delivery and Operations Analytics
 
-- `customer_id`
-- `customer_unique_id`
-- `order_id`
-- `product_id`
+Approval, processing, carrier handoff, delivery duration, late orders, and on-time delivery by state and category.
 
----
+### Phase 9: Payments and Catalog Intelligence
 
-## Analysis Workflow
+Payment method, transaction value, installments, product dimensions, freight, and products with no observed sales.
+
+### Phase 10-14: Reviews, Sellers, Operations, Catalog, and Market Basket
+
+Delivery and payment operations are covered in `sql/12_operations_and_delivery.sql`; deeper catalog analysis is in `sql/13_catalog_intelligence.sql`. Market basket analysis is a Python/ML module in `python/market_basket_analysis.py` and writes association rules using support, confidence, and lift. Review satisfaction and seller scorecards are prepared in `sql/14_review_and_seller_extensions.sql` and require the optional Olist reviews and sellers CSV files, which are not included in this checkout.
+
+### SQL and data setup
+
+The numbered SQL scripts create the normalized MySQL model, load the available Olist source data, and provide analysis for each supported phase.
+
+Run the scripts in numeric order from `sql/` after placing the CSV files in `datasets/`.
+
+### Phase 2: Python
+
+Open `notebook/Ecommerce_Analysis.ipynb`. It uses relative paths and writes reusable CSV outputs to `sql/reports/` for RFM, CLV, cohort retention, product analysis, and time series analysis.
+
+Install the required packages with:
 
 ```text
-Raw E-Commerce Data
-        ↓
-Data Exploration & Validation
-        ↓
-SQL Analysis & Aggregation
-        ↓
-RFM Customer Analysis
-        ↓
-Customer Segmentation
-        ↓
-Product & Geographic Analysis
-        ↓
-Time-Series Analysis
-        ↓
-Power BI Dashboard
-        ↓
-Business Insights & Recommendations
+pandas
+numpy
+matplotlib
+seaborn
+jupyter
+mlxtend  # optional, for market basket analysis
 ```
 
----
+### Power BI
 
-## Key Metrics
+Open `dashboard/Ecommerce_Analytics_Report.pbix` to explore the available report pages:
 
-| Metric | Result |
-|---|---:|
-| Total Revenue | ~$13.6M |
-| Total Orders | ~98K |
-| Customers Analyzed | 95K+ |
-| One-Time Buyers | ~96.95% |
-| Repeat Customer Rate | ~3.11% |
-| Highest Revenue Category | Beauty & Health |
-| Highest Revenue Month | November 2017 |
-| Top Revenue State | São Paulo |
+- Executive overview
+- Customer analysis and RFM segmentation
+- Product performance
+- Time series performance
+- Customer lifetime value and retention
+- Geographic and operational analysis
 
----
+Recommended future pages are Customer Retention & Cohort Analysis and Operations, combining delivery, payments, and order status.
 
-# Customer Analysis
+Dashboard screenshots are available in `Images/`.
 
-RFM analysis was performed using three customer-level metrics:
+## Business Questions Answered
 
-- **Recency** — Number of days since the customer's most recent purchase
-- **Frequency** — Number of distinct orders placed by the customer
-- **Monetary** — Total product revenue generated by the customer
+1. How much revenue, how many orders, customers, and what AOV does the business generate?
+2. Which states and categories drive revenue and orders?
+3. Which customers are high value or at risk?
+4. What proportion of revenue comes from the top 10% and top 20% of customers?
+5. Which states and categories attract high-value customers?
+6. When do customers return, and how does retention change by cohort?
+7. How long does delivery take, and where are late orders concentrated?
+8. Which payment methods and product attributes shape transaction performance?
 
-Initial analysis showed that **Frequency had limited discriminatory power** because approximately 96.95% of customers purchased only once.
+## Key Findings
 
-To create more actionable customer groups, segmentation focused primarily on customer recency and monetary value.
+The notebook and SQL reports calculate the latest values from the included datasets. Avoid hard-coding findings in dashboard captions: refresh the extracts after changing filters or source data.
 
-The final customer segments include:
-
-- **High Value Active**
-- **High Value At Risk**
-- **Recent Low Value**
-- **At Risk**
-- **Regular Customers**
-
-The analysis identified low observed repeat-purchase behavior as one of the most significant business challenges.
-
----
-
-# Product Analysis
-
-Product categories were evaluated using:
-
-- Total Revenue
-- Total Orders
-- Average Product Price
-- Unique Products
-- Revenue Share
-
-**Beauty & Health** emerged as one of the leading revenue-generating categories.
-
-The analysis also compared category-level revenue, demand, pricing, and product assortment to identify high-performing and lower-performing areas of the product portfolio.
-
----
-
-# Time-Series Analysis
-
-Business performance was analyzed over time using:
-
-- Monthly Revenue
-- Monthly Order Volume
-- Average Order Value
-- Revenue by Year
-- Revenue Growth
-- Peak Revenue Month
-
-**November 2017** recorded the highest monthly revenue during the analyzed period.
-
-The analysis also showed variations in revenue and order activity over time, indicating opportunities for seasonal inventory and operational planning.
-
-Year-over-year comparisons should be interpreted carefully because the dataset contains partial-year coverage.
-
----
-
-# Power BI Dashboard
-
-The final Power BI report contains **five interactive analytical pages** designed to provide both executive-level visibility and detailed business analysis.
-
-Dashboard: ![Dashboard View](https://app.powerbi.com/groups/me/reports/caf13aad-fb2d-423e-a1e9-7f220924c766/dca06a9cc2f0a5f20e10?experience=power-bi)
-
-## 1. Executive Overview
-
-![Executive Overview](Images/Overview.png)
-
-The Executive Overview provides a high-level view of:
-
-- Total Revenue
-- Total Orders
-- Total Customers
-- Average Order Value
-- Repeat Customer Rate
-- Monthly Revenue Trends
-- Revenue by State
-- Top Product Categories
-- Revenue Contribution
-
----
-
-## 2. Customer Analysis
-
-![Customer Analysis](Images/Customer.png)
-
-The Customer Analysis page focuses on:
-
-- Customer Segment Distribution
-- High-Value Customers
-- At-Risk Customers
-- Average Customer Spend
-- Purchase Frequency
-- Revenue by Customer Segment
-- RFM Customer Distribution
-- High-Spending Customers
-
----
-
-## 3. Product Analysis
-
-![Product Analysis](Images/Product.png)
-
-The Product Analysis page examines:
-
-- Total Product Categories
-- Top Revenue Category
-- Total Product Revenue
-- Average Product Price
-- Unique Products
-- Top Categories by Revenue
-- Category Revenue Share
-- Orders by Category
-- Product Catalog Size
-
----
-
-## 4. Time Series Analysis
-
-![Time Series Analysis](Images/Time-Series.png)
-
-The Time Series Analysis page tracks:
-
-- Total Revenue
-- Total Orders
-- Average Order Value
-- Highest Revenue Month
-- Revenue Growth
-- Monthly Revenue Trends
-- Orders vs Revenue
-- Revenue by Year
-- Order Trends
-
----
-
-## 5. Executive Insights
-
-![Executive Insights](Images/Executive-Insights.png)
-
-The Executive Insights page summarizes the findings from the overall analysis into:
-
-- Business Highlights
-- Growth Opportunities
-- Business Risks
-- Strategic Recommendations
-- Overall Business Conclusion
-
----
-
-# Key Business Insights
-
-### 1. Customer Retention Is the Primary Growth Challenge
-
-Approximately **96.95% of analyzed customers made only one purchase**, while the observed repeat customer rate was approximately **3.11%**.
-
-This indicates that the business has a significant opportunity to improve repeat purchasing behavior and long-term customer value.
-
-### 2. High-Value Customers Require Targeted Retention
-
-The customer segmentation identified both **High Value Active** and **High Value At Risk** customer groups.
-
-High-value customers showing declining activity represent an important opportunity for targeted re-engagement campaigns.
-
-### 3. Beauty & Health Is a Leading Revenue Category
-
-Beauty & Health emerged as one of the strongest revenue-generating product categories.
-
-This indicates potential opportunities for focused inventory planning, product availability, and targeted marketing investment.
-
-### 4. Revenue Shows Periods of Higher Demand
-
-Revenue and order activity varied across the analyzed period, with **November 2017** recording the highest monthly revenue.
-
-Historical peak periods can help inform inventory planning, logistics capacity, and promotional strategies.
-
-### 5. Geographic Revenue Is Concentrated in Key Markets
-
-São Paulo emerged as a major revenue-contributing state, highlighting the importance of understanding geographic demand when planning marketing and operational strategies.
-
----
-
-# Business Recommendations
-
-### Improve Customer Retention
-
-Introduce loyalty rewards, personalized offers, discount coupons, and targeted remarketing campaigns to encourage repeat purchases.
-
-### Re-Engage High-Value At-Risk Customers
-
-Use targeted email campaigns, personalized product recommendations, and exclusive offers to recover valuable customers showing declining activity.
-
-### Invest in High-Performing Categories
-
-Prioritize inventory availability and marketing investment for strong-performing categories such as **Beauty & Health**.
-
-### Prepare for Peak Demand Periods
-
-Use historical revenue and order trends to prepare inventory, logistics capacity, and promotional campaigns before high-demand periods.
-
-### Optimize Low-Performing Categories
-
-Review lower-performing categories using strategies such as:
-
-- Product bundling
-- Promotional pricing
-- Cross-selling
-- Catalog optimization
-
----
-
-# Repository Structure
+## Repository Structure
 
 ```text
-Ecommerce-Analytics/
-│
-├── dashboard/
-│   └── Power BI dashboard file
-│
-├── datasets/
-│   └── Local/raw datasets
-│
-├── Images/
-│   └── Dashboard icons and design assets
-│
-├── notebook/
-│   └── Jupyter Notebook analysis
-│
-├── screenshots/
-│   ├── Overview.png
-│   ├── Customer.png
-│   ├── Product.png
-│   ├── Time-Series.png
-│   └── Executive-Insights.png
-│
-├── sql/
-│   └── SQL analysis scripts
-│
-├── .gitignore
-│
-└── README.md
+Git/
+├── dashboard/     Power BI report and icons
+├── datasets/      Source CSV files
+├── Images/        Dashboard screenshots
+├── notebook/      Reproducible Python analysis
+├── python/        Optional ML analysis modules
+└── sql/           Database setup, phase analysis, and report extracts
 ```
 
----
-
-# Project Limitations
-
-- Revenue is calculated using product item prices and excludes freight charges.
-- The Power BI V1 report uses SQL-generated analytical datasets rather than a fully integrated star-schema model.
-- The available dataset contains partial-year coverage, which affects direct year-over-year comparisons.
-- Customer purchase frequency is highly skewed toward one-time purchases, limiting the effectiveness of traditional percentile-based RFM Frequency scoring.
-- Business recommendations are based on observed transaction patterns; the analysis does not establish causal reasons for customer churn or purchasing behavior.
-
----
-
-# Future Improvements
-
-Future versions of the project could include:
-
-- Implementation of a Power BI star-schema data model
-- Dedicated Date dimension for time-intelligence analysis
-- Advanced DAX time-intelligence measures
-- Improved RFM scoring for highly skewed purchase-frequency data
-- Cohort-based customer retention analysis
-- Customer Lifetime Value analysis
-- Fully integrated cross-filtering across customer, product, geography, and time dimensions
-
----
-
-# Skills Demonstrated
-
-- SQL Data Analysis
-- MySQL
-- Data Exploration
-- Data Validation
-- Multi-Table Joins
-- Data Aggregation
-- RFM Analysis
-- Customer Segmentation
-- Customer Retention Analysis
-- Product Performance Analysis
-- Time-Series Analysis
-- Power BI
-- DAX
-- Power Query
-- Dashboard Design
-- Business Intelligence
-- Business Insight Generation
-- Executive Reporting
-
----
-
-# Author
-
-**Divanshu Jain**
-
-Data Analyst | Data Quality & Business Operations Analytics
+The CSV files are retained for reproducibility. Review dataset licensing and hosting limits before publishing the repository publicly.
