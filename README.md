@@ -92,18 +92,55 @@ Dashboard screenshots are available in `Images/`.
 
 ## Business Questions Answered
 
-1. How much revenue, how many orders, customers, and what AOV does the business generate?
-2. Which states and categories drive revenue and orders?
-3. Which customers are high value or at risk?
-4. What proportion of revenue comes from the top 10% and top 20% of customers?
-5. Which states and categories attract high-value customers?
-6. When do customers return, and how does retention change by cohort?
-7. How long does delivery take, and where are late orders concentrated?
-8. Which payment methods and product attributes shape transaction performance?
+### Executive sales answers
+
+1. **How much revenue, how many orders, customers, and what AOV?** 
+Approximately **$13.6M** in delivered-item revenue across **98.7K orders** and **93.4K unique customers**, with an overall AOV of approximately **$137.70**.
+2. **Which states generate revenue?** 
+**Sao Paulo** leads by a wide margin at approximately **$5.21M**, followed by Rio de Janeiro at **$1.82M** and Minas Gerais at **$1.59M**. Smaller states can show higher AOV despite lower total revenue.
+3. **Which categories perform best?** 
+**Beauty & Health** leads revenue at **$1.23M**, followed by Watches Gifts at **$1.17M** and Bed, Bath & Table Linens at **$1.02M**.
+4. **How does revenue change over time?** 
+Revenue rises through 2017, peaks in **November 2017 at approximately $987.8K**, remains strong in December and January, and then fluctuates through 2018.
+
+### Customer and RFM answers
+
+5. **Who are high-value and at risk?** 
+The retained segmentation identifies High Value Active, High Value At Risk, Recent Low Value, At Risk, and Regular Customers. High Value Active customers have the largest segment value at approximately **$6.05M**, while High Value At Risk customers contribute approximately **$1.98M** and are the clearest re-engagement audience.
+6. **How many purchase once?** 
+Approximately **96.95%** of unique customers purchase once, confirming that repeat purchase and retention are the primary growth opportunity.
+7. **Which segments generate revenue?** 
+High Value Active contributes the most value, followed by Regular Customers at approximately **$4.02M**. High Value At Risk customers have a higher average observed value than High Value Active customers, so retention work should prioritize them despite their smaller population.
+
+### CLV and retention answers
+
+8. **What is observed CLV?** 
+Observed CLV is historical customer revenue, not a forecast. The current report measures customer lifetime revenue, average customer value, top customers, revenue concentration, CLV by state, and CLV by category.
+9. **What proportion of revenue comes from the top 10% and top 20%?** 
+The notebook calculates both shares from the customer-level monetary distribution and writes the ranked data used by the Pareto chart. These are concentration measures, not predictive CLV estimates.
+10. **When do customers return?** 
+Cohort retention falls sharply after the first purchase month. The cohort extract and heatmap expose month 1, month 3, and month 6 retention by acquisition cohort, making the retention problem visible by timing rather than only as a one-time-buyer percentage.
+
+### Product, geography, and operations answers
+
+11. **Which categories attract high-value customers?** 
+The CLV-by-category output ranks categories by unique customers, total revenue, and revenue per customer; category results should be interpreted alongside catalog size and order volume rather than revenue alone.
+12. **Where are customers concentrated?** 
+Sao Paulo dominates customers, orders, and revenue. City-level and ZIP-prefix outputs add the detail needed for ranking cities and building a bubble or filled map.
+13. **How is delivery performing?** 
+The operations SQL and notebook calculate average delivery days, on-time percentage, late orders, approval time, processing time, and carrier-to-customer time, with state and category breakdowns. These outputs identify operational bottlenecks without treating missing timestamps as completed deliveries.
+14. **Which payment methods dominate?** 
+The payment module compares payment type, payment value, average transaction value, installments, and payment method by category. Reviews, seller satisfaction, and seller-balanced scoring require the optional source files documented in `sql/14_review_and_seller_extensions.sql`.
 
 ## Key Findings
 
-The notebook and SQL reports calculate the latest values from the included datasets. Avoid hard-coding findings in dashboard captions: refresh the extracts after changing filters or source data.
+- The business is large but highly retention-dependent: roughly 97% of unique customers purchase only once.
+- Revenue is geographically concentrated in Sao Paulo, while several lower-volume states have higher AOVs.
+- Beauty & Health, Watches Gifts, and Bed, Bath & Table Linens are the leading revenue categories in the current extract.
+- November 2017 is the strongest observed revenue month.
+- High Value Active customers contribute the largest observed segment revenue, while High Value At Risk customers have the highest average observed value and should be prioritized for re-engagement.
+- Cohort retention declines quickly after the first purchase, which supports a dedicated retention page instead of relying on a generic customer-count visual.
+- The Pareto, delivery, payment, catalog, and market-basket modules generate the detailed outputs used for dashboard decisions. Refresh the extracts before publishing final KPI captions.
 
 ## Repository Structure
 
